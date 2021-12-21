@@ -1,0 +1,55 @@
+#!/system/bin/sh
+# by wahyu6070
+BASE=`dirname $(readlink -f $0)`
+#BASE=/data/root
+PENTOL=$BASE/root
+PROOT=/data/data/com.termux/files/usr/bin/proot
+cd $BASE
+
+test ! -d $PENTOL && mkdir -p $PENTOL
+if [ ! -f $PROOT ]; then
+	echo "! proot not installed in termux"
+	exit 0
+fi
+
+echo "127.0.0.1 localhost localhost" > $PENTOL/etc/hosts
+echo "nameserver 1.1.1.1" > $PENTOL/etc/resolv.conf
+chmod 755 $PENTOL/etc/resolv.conf
+
+## unset LD_PRELOAD in case termux-exec is installed
+unset LD_PRELOAD
+command="$PROOT"
+command+=" --kill-on-exit"
+command+=" --link2symlink"
+command+=" -0"
+command+=" -r $PENTOL"
+command+=" -b /dev"
+command+=" -b /proc"
+command+=" -b /sys"
+command+=" -b /data"
+command+=" -b /data/media/0/:/home"
+command+=" -b /sdcard:/sdcard"
+command+=" -b $PENTOL:/dev/shm"
+command+=" -b /proc/self/fd/2:/dev/stderr"
+command+=" -b /proc/self/fd/1:/dev/stdout"
+command+=" -b /proc/self/fd/0:/dev/stdin"
+command+=" -b /dev/urandom:/dev/random"
+command+=" -b /proc/self/fd:/dev/fd"
+command+=" -b /system"
+command+=" -w /home"
+command+=" /usr/bin/env -i"
+command+=" MOZ_FAKE_NO_SANDBOX=1"
+command+=" HOME=/root"
+command+=" PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/xbin:/usr/games:/usr/local/games"
+command+=" TERM=xterm"
+command+=" LANG=C.UTF-8"
+command+=" /bin/bash --login"
+com="$@"
+
+if [ -z "$1" ];then
+    exec $command
+else
+    $command -c "$com"
+fi
+
+
