@@ -22,6 +22,7 @@ command="$PROOT"
 command+=" --kill-on-exit"
 command+=" --link2symlink"
 command+=" -0"
+command+=" -b /:/host-rootfs"
 command+=" -r $PENTOL"
 command+=" -b /dev"
 command+=" -b /proc"
@@ -52,4 +53,8 @@ else
     $command -c "$com"
 fi
 
-
+for i in system vendor product system_ext; do
+	if [ -d $pentol/$i ] [ "$(ls -A $pentol/$i)" ]; then
+		umount $pentol/$i
+	fi
+done
