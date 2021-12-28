@@ -6,7 +6,6 @@
 *.br
 *.gz
 *.xz
-*init
 *.png
 *.jpg
 busybox
@@ -18,4 +17,3 @@ zipalign
 zip
 tar
 unzip
-init
